@@ -1,0 +1,54 @@
+[
+{
+    "model": "catalog.product",
+    "pk": 1,
+    "fields": {
+        "name": "Сарафан",
+        "description": "Джинсовый, короткий",
+        "picture": "",
+        "category": 1,
+        "price": "1000.00",
+        "created_at": "2026-06-14T13:49:51.146Z",
+        "updated_at": "2026-06-14T13:49:51.146Z"
+    }
+},
+{
+    "model": "catalog.product",
+    "pk": 3,
+    "fields": {
+        "name": "Джинсы клёш",
+        "description": "Светло-джинсовые",
+        "picture": "",
+        "category": 2,
+        "price": "1500.00",
+        "created_at": "2026-06-14T13:53:35.622Z",
+        "updated_at": "2026-06-14T13:53:35.622Z"
+    }
+},
+{
+    "model": "catalog.product",
+    "pk": 4,
+    "fields": {
+        "name": "Офисные брюки",
+        "description": "Серые в полоску",
+        "picture": "",
+        "category": 2,
+        "price": "1500.00",
+        "created_at": "2026-06-14T13:54:20.733Z",
+        "updated_at": "2026-06-14T13:54:20.733Z"
+    }
+},
+{
+    "model": "catalog.product",
+    "pk": 6,
+    "fields": {
+        "name": "Вечернее платье",
+        "description": "Черное, приталенное",
+        "picture": "",
+        "category": 2,
+        "price": "10000.00",
+        "created_at": "2026-06-14T14:21:25.529Z",
+        "updated_at": "2026-06-14T14:21:25.529Z"
+    }
+}
+]

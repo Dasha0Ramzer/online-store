@@ -61,7 +61,7 @@
                         </div>
                         <div class="mb-3">
                             <label for="message">Сообщение</label>
-                            <textarea type="text" name="message" class="form-control" id="message" placeholder="Контактный телефон" required></textarea>
+                            <textarea type="text" name="message" class="form-control" id="message" placeholder="Введите сообщение" required></textarea>
                         </div>
                         <button type="submit" class="btn btn-lg btn-block btn-outline-primary">Отправить</button>
                     </form>
@@ -101,7 +101,10 @@
         </div>
     </footer>
 </div>
-
+<h1>Контакты</h1>
+<p>Имя: {{ contact_info.name }}</p>
+<p>Телефон: {{contact_info.phone }}</p>
+<p>Сообщение: {{contact_info.message}}</p>
 <!-- Подключите статичеcкие файлы со скриптами Bootstrap -->
 </body>
 </html>

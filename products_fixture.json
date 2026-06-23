@@ -1,54 +1,54 @@
 [
 {
     "model": "catalog.product",
-    "pk": 1,
+    "pk": 7,
     "fields": {
         "name": "Сарафан",
         "description": "Джинсовый, короткий",
-        "picture": "",
+        "picture": "picture/sundress.jpg",
         "category": 1,
         "price": "1000.00",
-        "created_at": "2026-06-14T13:49:51.146Z",
-        "updated_at": "2026-06-14T13:49:51.146Z"
+        "created_at": "2026-06-20T17:51:29.246Z",
+        "updated_at": "2026-06-20T17:51:29.246Z"
     }
 },
 {
     "model": "catalog.product",
-    "pk": 3,
+    "pk": 8,
     "fields": {
         "name": "Джинсы клёш",
         "description": "Светло-джинсовые",
-        "picture": "",
+        "picture": "picture/jeans.jpg",
         "category": 2,
         "price": "1500.00",
-        "created_at": "2026-06-14T13:53:35.622Z",
-        "updated_at": "2026-06-14T13:53:35.622Z"
+        "created_at": "2026-06-20T17:54:13.197Z",
+        "updated_at": "2026-06-20T17:54:13.197Z"
     }
 },
 {
     "model": "catalog.product",
-    "pk": 4,
+    "pk": 9,
     "fields": {
         "name": "Офисные брюки",
         "description": "Серые в полоску",
-        "picture": "",
+        "picture": "picture/trousers.jpg",
         "category": 2,
         "price": "1500.00",
-        "created_at": "2026-06-14T13:54:20.733Z",
-        "updated_at": "2026-06-14T13:54:20.733Z"
+        "created_at": "2026-06-20T17:56:20.176Z",
+        "updated_at": "2026-06-20T17:56:20.176Z"
     }
 },
 {
     "model": "catalog.product",
-    "pk": 6,
+    "pk": 10,
     "fields": {
         "name": "Вечернее платье",
-        "description": "Черное, приталенное",
-        "picture": "",
-        "category": 2,
+        "description": "Черное приталенное",
+        "picture": "picture/dress.jpg",
+        "category": 1,
         "price": "10000.00",
-        "created_at": "2026-06-14T14:21:25.529Z",
-        "updated_at": "2026-06-14T14:21:25.529Z"
+        "created_at": "2026-06-20T17:57:47.815Z",
+        "updated_at": "2026-06-20T17:57:47.815Z"
     }
 }
 ]

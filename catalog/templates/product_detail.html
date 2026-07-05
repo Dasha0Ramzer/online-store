@@ -10,9 +10,9 @@
             <img src="{{ product.picture.url }}" alt="Фото товара" style="max-width: 70%; height: auto;">
         </div>
         <div class="col-6" style="padding: 20px;">
-            <h1 style="font-size: 2em;">{{ product.price }} ₽</h1>
-            <p class="lead">Категория: {{ product.category }}</p>
-            <p class="lead text-justify">Описание: {{ product.description }}</p>
+            <h1 style="font-size: 2em;">{{ object.price }} ₽</h1>
+            <p class="lead">Категория: {{ object.category }}</p>
+            <p class="lead text-justify">Описание: {{ object.description }}</p>
             <button type="button" class="btn btn-lg btn-outline-primary">Купить</button>
         </div>
     </div>

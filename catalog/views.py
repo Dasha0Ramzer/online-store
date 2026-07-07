@@ -3,9 +3,11 @@ from itertools import product
 from django.core.paginator import Paginator
 from django.http import HttpResponse
 from django.shortcuts import render, get_object_or_404
+from django.urls import reverse
 from django.views import View
-from django.views.generic import TemplateView, DetailView
+from django.views.generic import TemplateView, DetailView, UpdateView, DeleteView
 
+from catalog.forms import ProductForm
 from catalog.models import Product, ContactInfo, Category
 
 
@@ -52,26 +54,44 @@ class ProductDetailView(DetailView):
 
 class AddProductView(View):
     def get(self, request, *args, **kwargs):
-        return render(request, "add_product.html", {"page_title": "Добавить продукт"})
+        form = ProductForm()
+        return render(request, "add_product.html", {"form": form, "page_title": "Добавить продукт"})
 
     def post(self, request, *args, **kwargs):
-        name = request.POST.get("name")
-        description = request.POST.get("description")
-        picture = request.FILES.get("picture")
-        category_name = request.POST.get("category")
-        price = request.POST.get("price")
+        form = ProductForm(request.POST, request.FILES)
+        if form.is_valid():
+            product = form.save(commit=False)
+            category_name = request.POST.get("category")
+            category, created = Category.objects.get_or_create(name=category_name)
+            product.category = category
+            product.save()
 
-        category, created = Category.objects.get_or_create(name=category_name)
+            return HttpResponse(
+                f"<h2>Продукт {product.name} успешно добавлен!</h2>"
+            )
+        return render(request, "add_product.html", {"form": form, "page_title": "Добавить продукт"})
 
-        product = Product(
-            name=name,
-            description=description,
-            picture=picture,
-            category=category,
-            price=price,
-        )
-        product.save()
 
-        return HttpResponse(
-            f"<h2>Продукт {name} успешно добавлен! Категория: {category_name} (создана: {created})</h2>"
-        )
+class ProductUpdateView(UpdateView):
+    model = Product
+    form_class = ProductForm
+    template_name = "product_update.html"
+
+    def get_success_url(self):
+        return reverse("catalog:product_detail", kwargs={"pk": self.object.pk})
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["page_title"] = "Редактировать продукт"
+        return context
+
+
+class ProductDeleteView(DeleteView):
+    model = Product
+    template_name = "product_delete.html"
+    success_url = "/"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["page_title"] = "Удалить продукт"
+        return context

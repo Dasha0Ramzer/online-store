@@ -1,52 +1,60 @@
+from itertools import product
+
 from django.core.paginator import Paginator
 from django.http import HttpResponse
 from django.shortcuts import render, get_object_or_404
+from django.views import View
+from django.views.generic import TemplateView, DetailView
 
 from catalog.models import Product, ContactInfo, Category
 
 
-def home(request):
-    latest_products = Product.objects.order_by("-created_at")[:5]
-    all_products = Product.objects.all()
+class HomeView(TemplateView):
+    template_name = "home.html"
 
-    paginator = Paginator(all_products, 2)
-    page_number = request.GET.get("page")
-    page_obj = paginator.get_page(page_number)
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
 
-    context = {
-        "latest_products": latest_products,
-        "page_obj": page_obj,
-        "page_title": "Skystore",
-    }
+        all_products = Product.objects.all()
+        paginator = Paginator(all_products, 2)
+        page_number = self.request.GET.get("page")
+        context["page_obj"] = paginator.get_page(page_number)
 
-    return render(request, "home.html", context)
+        context["page_title"] = "Skystore"
+        return context
 
 
-def contacts(request):
-    if request.method == "POST":
+class ContactsView(View):
+    def post(self, request, *args, **kwargs):
         name = request.POST.get("name")
         phone = request.POST.get("phone")
         message = request.POST.get("message")
 
         return HttpResponse(
-            f"<h2>Спасибо, {name}, за сообщение! Мы свяжемся с вами в ближайшее время по телефону {phone}.</h2>"
+            f"<h2>Спасибо, {name}, за сообщение! Мы свяжемся с вами в ближайшее время по телефону {phone}.<h2>"
         )
 
-    contact_info = ContactInfo.objects.first()
-    context = {"contact_info": contact_info, "page_title": "Контакты"}
-
-    return render(request, "contacts.html", context)
-
-
-def product_detail(request, product_id):
-    product = get_object_or_404(Product, id=product_id)
-    context = {"product": product, "page_title": product.name}
-    return render(request, "product_detail.html", context)
+    def get(self, request, *args, **kwargs):
+        contact_info = ContactInfo.objects.first()
+        context = {"contact_info": contact_info, "page_title": "Контакты"}
+        return render(request, "contacts.html", context)
 
 
-def add_product(request):
+class ProductDetailView(DetailView):
+    model = Product
+    template_name = "product_detail.html"
 
-    if request.method == "POST":
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["page_title"] = self.object.name
+        return context
+
+
+class AddProductView(View):
+    def get(self, request, *args, **kwargs):
+        return render(request, "add_product.html", {"page_title": "Добавить продукт"})
+
+    def post(self, request, *args, **kwargs):
         name = request.POST.get("name")
         description = request.POST.get("description")
         picture = request.FILES.get("picture")
@@ -67,5 +75,3 @@ def add_product(request):
         return HttpResponse(
             f"<h2>Продукт {name} успешно добавлен! Категория: {category_name} (создана: {created})</h2>"
         )
-
-    return render(request, "add_product.html", {"page_title": "Добавить продукт"})

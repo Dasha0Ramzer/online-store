@@ -60,12 +60,7 @@ class AddProductView(View):
     def post(self, request, *args, **kwargs):
         form = ProductForm(request.POST, request.FILES)
         if form.is_valid():
-            product = form.save(commit=False)
-            category_name = request.POST.get("category")
-            category, created = Category.objects.get_or_create(name=category_name)
-            product.category = category
-            product.save()
-
+            product = form.save()
             return HttpResponse(
                 f"<h2>Продукт {product.name} успешно добавлен!</h2>"
             )

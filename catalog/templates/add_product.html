@@ -14,32 +14,11 @@
             <div class="card-body">
                 <form method="post" action="" class="form-floating" enctype="multipart/form-data">
                     {% csrf_token %}
-                    <div class="mb-3">
-                        <label for="name">Наименование</label>
-                        <input type="text" name="name" class="form-control" id="name"
-                               placeholder="Введите наименование продукта" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="description">Описание</label>
-                        <textarea name="description" class="form-control" id="description"
-                                  placeholder="Введите описание продукта"></textarea>
-                    </div>
-                    <div class="mb-3">
-                        <label for="picture">Изображение</label>
-                        <input type="file" name="picture" class="form-control" id="picture"
-                               placeholder="Вставьте изображение">
-                    </div>
-                    <div class="mb-3">
-                        <label for="category">Категория</label>
-                        <input type="text" name="category" class="form-control" id="category"
-                               placeholder="Введите категорию продукта" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="price">Цена</label>
-                        <input type="text" name="price" class="form-control" id="price"
-                               placeholder="Введите стоимость продукта в рублях" required>
-                    </div>
+                    {{ form.as_p }}
                     <button type="submit" class="btn btn-lg btn-block btn-outline-primary">Отправить</button>
+                    {% if form.price.errors %}
+                    <div class="error">{{ form.price.errors }}</div>
+                    {% endif %}
                 </form>
             </div>
         </div>

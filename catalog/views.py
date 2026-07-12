@@ -1,5 +1,6 @@
 from itertools import product
 
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.paginator import Paginator
 from django.http import HttpResponse
 from django.shortcuts import render, get_object_or_404
@@ -52,7 +53,7 @@ class ProductDetailView(DetailView):
         return context
 
 
-class AddProductView(View):
+class AddProductView(LoginRequiredMixin, View):
     def get(self, request, *args, **kwargs):
         form = ProductForm()
         return render(request, "add_product.html", {"form": form, "page_title": "Добавить продукт"})
@@ -67,7 +68,7 @@ class AddProductView(View):
         return render(request, "add_product.html", {"form": form, "page_title": "Добавить продукт"})
 
 
-class ProductUpdateView(UpdateView):
+class ProductUpdateView(LoginRequiredMixin, UpdateView):
     model = Product
     form_class = ProductForm
     template_name = "product_update.html"
@@ -81,7 +82,7 @@ class ProductUpdateView(UpdateView):
         return context
 
 
-class ProductDeleteView(DeleteView):
+class ProductDeleteView(LoginRequiredMixin, DeleteView):
     model = Product
     template_name = "product_delete.html"
     success_url = "/"

@@ -3,6 +3,9 @@ from django import forms
 from catalog.models import Product
 
 
+FORBIDDEN_WORDS = ["казино", "криптовалюта", "крипта", "биржа", "дешево", "бесплатно", "обман", "полиция", "радар"]
+
+
 class ProductForm(forms.ModelForm):
     class Meta:
         model = Product
@@ -21,9 +24,8 @@ class ProductForm(forms.ModelForm):
         cleaned_data = super().clean()
         name = cleaned_data.get("name")
         description = cleaned_data.get("description")
-        forbidden_words = ["казино", "криптовалюта", "крипта", "биржа", "дешево", "бесплатно", "обман", "полиция", "радар"]
 
-        for word in forbidden_words:
+        for word in FORBIDDEN_WORDS:
             if word.lower() in name.lower() or word.lower() in description.lower():
                 raise forms.ValidationError(f"Нельзя использовать слово: {word}")
 

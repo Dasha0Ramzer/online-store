@@ -1,6 +1,8 @@
 import secrets
 
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.mail import send_mail
+from django.http import Http404
 from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse
 from django.views.generic import CreateView, UpdateView
@@ -28,12 +30,12 @@ class UserCreateView(CreateView):
         user.token = token
         user.save()
         host = self.request.get_host()
-        url = f'http://{host}/users/email-confirm/{token}/'
+        url = f"http://{host}/users/email-confirm/{token}/"
         send_mail(
             subject="Подтверждение почты",
             message=f"Привет, перейди по ссылке для подтверждения почты {url}",
             from_email=EMAIL_HOST_USER,
-            recipient_list=[user.email]
+            recipient_list=[user.email],
         )
         return super().form_valid(form)
 
@@ -45,7 +47,7 @@ def email_verification(request, token):
     return redirect(reverse("users:login"))
 
 
-class UserUpdateView(UpdateView):
+class UserUpdateView(LoginRequiredMixin, UpdateView):
     model = User
     fields = ["email", "phone", "avatar", "country"]
     template_name = "update.html"
@@ -57,3 +59,9 @@ class UserUpdateView(UpdateView):
         context = super().get_context_data(**kwargs)
         context["page_title"] = "Редактировать профиль"
         return context
+
+    def get_object(self, queryset=None):
+        obj = super().get_object(queryset=queryset)
+        if obj.pk != self.request.user.pk:
+            raise Http404("Вы не можете редактировать чужой профиль.")
+        return obj

@@ -2,6 +2,7 @@ from itertools import product
 
 from django.contrib.auth.decorators import permission_required
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.models import Group
 from django.core.exceptions import PermissionDenied
 from django.core.paginator import Paginator
 from django.http import HttpResponse
@@ -90,9 +91,9 @@ class ProductUpdateView(LoginRequiredMixin, UpdateView):
 
     def dispatch(self, request, *args, **kwargs):
         product = self.get_object()
-        if product.owner != request.user and not request.user.has_perm(
-            "catalog.moderators_of_products"
-        ):
+        moderator_group = Group.objects.get(name="moderator_of_products")
+
+        if product.owner != request.user and not moderator_group in request.user.groups.all():
             raise PermissionDenied
         return super().dispatch(request, *args, **kwargs)
 
@@ -112,9 +113,9 @@ class ProductDeleteView(LoginRequiredMixin, DeleteView):
 
     def dispatch(self, request, *args, **kwargs):
         product = self.get_object()
-        if product.owner != request.user and not request.user.has_perm(
-            "catalog.moderators_of_products"
-        ):
+        moderator_group = Group.objects.get(name="moderator_of_products")
+
+        if product.owner != request.user and not moderator_group in request.user.groups.all():
             raise PermissionDenied
         return super().dispatch(request, *args, **kwargs)
 

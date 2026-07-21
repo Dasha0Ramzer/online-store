@@ -1,9 +1,12 @@
 from itertools import product
 
+from django.contrib.auth.decorators import permission_required
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.models import Group
+from django.core.exceptions import PermissionDenied
 from django.core.paginator import Paginator
 from django.http import HttpResponse
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse
 from django.views import View
 from django.views.generic import TemplateView, DetailView, UpdateView, DeleteView
@@ -43,12 +46,17 @@ class ContactsView(View):
         return render(request, "contacts.html", context)
 
 
-class ProductDetailView(DetailView):
+class ProductDetailView(LoginRequiredMixin, DetailView):
     model = Product
     template_name = "product_detail.html"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        user = self.request.user
+        context["can_edit"] = (
+            self.object.owner == user
+            or user.groups.filter(name="moderators_of_products").exists()
+        )
         context["page_title"] = self.object.name
         return context
 
@@ -56,22 +64,38 @@ class ProductDetailView(DetailView):
 class AddProductView(LoginRequiredMixin, View):
     def get(self, request, *args, **kwargs):
         form = ProductForm()
-        return render(request, "add_product.html", {"form": form, "page_title": "Добавить продукт"})
+        return render(
+            request,
+            "add_product.html",
+            {"form": form, "page_title": "Добавить продукт"},
+        )
 
     def post(self, request, *args, **kwargs):
         form = ProductForm(request.POST, request.FILES)
         if form.is_valid():
-            product = form.save()
-            return HttpResponse(
-                f"<h2>Продукт {product.name} успешно добавлен!</h2>"
-            )
-        return render(request, "add_product.html", {"form": form, "page_title": "Добавить продукт"})
+            product = form.save(commit=False)
+            product.owner = request.user
+            product.save()
+            return HttpResponse(f"<h2>Продукт {product.name} успешно добавлен!</h2>")
+        return render(
+            request,
+            "add_product.html",
+            {"form": form, "page_title": "Добавить продукт"},
+        )
 
 
 class ProductUpdateView(LoginRequiredMixin, UpdateView):
     model = Product
     form_class = ProductForm
     template_name = "product_update.html"
+
+    def dispatch(self, request, *args, **kwargs):
+        product = self.get_object()
+        moderator_group = Group.objects.get(name="moderator_of_products")
+
+        if product.owner != request.user and not moderator_group in request.user.groups.all():
+            raise PermissionDenied
+        return super().dispatch(request, *args, **kwargs)
 
     def get_success_url(self):
         return reverse("catalog:product_detail", kwargs={"pk": self.object.pk})
@@ -87,7 +111,23 @@ class ProductDeleteView(LoginRequiredMixin, DeleteView):
     template_name = "product_delete.html"
     success_url = "/"
 
+    def dispatch(self, request, *args, **kwargs):
+        product = self.get_object()
+        moderator_group = Group.objects.get(name="moderator_of_products")
+
+        if product.owner != request.user and not moderator_group in request.user.groups.all():
+            raise PermissionDenied
+        return super().dispatch(request, *args, **kwargs)
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["page_title"] = "Удалить продукт"
         return context
+
+
+@permission_required("catalog.can_unpublish_product")
+def unpublish_product(request, product_id):
+    product = get_object_or_404(Product, id=product_id)
+    product.is_published = False
+    product.save()
+    return redirect("/")

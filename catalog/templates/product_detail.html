@@ -4,24 +4,37 @@
     <h1 class="display-4">{{ product.name }}</h1>
 </div>
 
-    <div class="row">
-        <div class="col-6" style="display: flex; align-items: center; justify-content: center;">
-            <!-- Фото товара -->
-            {% if product.picture %}
-            <img src="{{ product.picture.url }}" alt="Фото товара" style="max-width: 70%; height: auto;">
-            {% else %}
-            <img src="/static/images/product_placeholder.png" alt="Изображение отсутствует" style="max-width: 70%; height: auto;">
-            {% endif %}
-        </div>
-        <div class="col-6" style="padding: 20px;">
-            <h1 style="font-size: 2em;">{{ object.price }} ₽</h1>
-            <p class="lead">Категория: {{ object.category }}</p>
-            <p class="lead text-justify">Описание: {{ object.description }}</p>
-            <button type="button" class="btn btn-lg btn-outline-primary">Купить</button>
-            <a href="/product_update/{{ product.id }}/" class="btn btn-secondary">Редактировать</a>
-            <a href="/product_delete/{{product.id}}/" class="btn btn-danger">Удалить</a>
-        </div>
+<div class="row">
+    <div class="col-6" style="display: flex; align-items: center; justify-content: center;">
+        <!-- Фото товара -->
+        {% if product.picture %}
+        <img src="{{ product.picture.url }}" alt="Фото товара" style="max-width: 70%; height: auto;">
+        {% else %}
+        <img src="/static/images/product_placeholder.png" alt="Изображение отсутствует"
+             style="max-width: 70%; height: auto;">
+        {% endif %}
     </div>
+    <div class="col-6" style="padding: 20px;">
+        <h1 style="font-size: 2em;">{{ object.price }} ₽</h1>
+        <p class="lead">Категория: {{ object.category }}</p>
+        <p class="lead text-justify">Описание: {{ object.description }}</p>
+        <button type="button" class="btn btn-lg btn-outline-primary">Купить</button>
+        {% if can_edit %}
+        <a href="/product_update/{{ product.id }}/" class="btn btn-secondary">Редактировать</a>
+        {% endif %}
+
+        {% if perms.catalog.can_unpublish_product %}
+        <form method="post" action="/unpublish/{{product.id}}/">
+            {% csrf_token %}
+            <button type="submit">Отменить публикацию</button>
+        </form>
+        {% endif %}
+
+        {% if can_edit %}
+        <a href="/product_delete/{{product.id}}/" class="btn btn-danger">Удалить</a>
+        {% endif %}
+    </div>
+</div>
 
 
 {% endblock %}
